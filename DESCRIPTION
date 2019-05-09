@@ -1,11 +1,13 @@
 Package: c2plasso
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
+Title: Pliable Lasso and Continuous-Categorical Pliable Lasso
+Version: 1.1.1.9000
+Author: person(given = "Rakheon",
+           family = "Kim",
+           role = c("aut", "cre"),
+           email = "rkim@stat.tamu.edu")
 Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: Procedures for fitting pliable lasso and continuous-categorical pliable lasso in regression settings
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
