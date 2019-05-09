@@ -206,6 +206,38 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
 }
 
 
+#' Fit the continuous-categorical pliable lasso (c2plasso) in the linear regression setting
+#'
+#' @param X N by p matrix of main predictors
+#' @param Z N by K matrix of modifying variables. Modifying variables can take the form of continuous variables or categorical variables or both. Categorical variable should be coded by dummy variables (0-1).
+#' @param Y vector of response variable
+#' @param df_Z vector of degrees of freedom for each group of modifying variables. Continuous or binary variables has one degree of freedom. Categorical variables with C categories has (C-1) degrees of freedom. For example, if there are one continuous modifying variable, one binary modifying variable and one categorical modifying variable with 4 factor levels which is expressed with 3 binary dummy variables, then df_Z = c(1,1,3).
+#' @param lambda_seq sequence of the tuning parameter, lambda. Can take the form of a sequence or a scalar.
+#' @param alpha weight parameter between group penalty and individual penalty. Default value is 0.5.
+#' @param tt learning rate for the gradient descent procedure. Default value is 0.1.
+#' @param zlinear if true, the linear terms of the modifying variables are included. These terms are not regularized. Default value is TRUE.
+#' @param tol tolerance for convergence. Convergence is determined by the value of the objective function: abs(objective_old - objective_new) is compared with the tolerance value. Default value is 1e-7.
+#' @param iter maximum number of iteration for one lambda.  Default value is 500.
+#'
+#' @return lambda_seq: lambda sequence used in the algorithm
+#' @return beta_mat: p by (length of lambda_seq) matrix of estimated beta for scaled and centered main predictors. Each column represents the vector of fitted beta for each lambda value. The order of lambda is the order of lambda_seq. For a scalar value of lambda_seq, the output is a p-dim vector of fitted beta.
+#' @return theta_mat: p by K by (length of lambda_seq) array of estimated theta for scaled and centered main predictors and modifying variables.
+#' @return beta0_vec: intercept term
+#' @return theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
+#' @return fmin_vec: vector of objective function values for the lambda_seq values.
+#' @export
+#'
+#' @examples
+#' x=matrix(rnorm(100*5, 0, 1),100,5)
+#' z1=matrix(rnorm(100*3, 0, 1),100,3)
+#' z2=matrix(as.factor(sample(0:3, 100*2, prob=c(1/4,1/4,1/4,1/4), replace = TRUE)),100,2)
+#' z2=as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
+#' z=cbind(z1, z2)
+#' z=as.matrix(z)
+#' y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
+#' c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
+#' c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
+#' c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
 c2plasso <- function(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size
@@ -247,6 +279,46 @@ c2plasso <- function(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zl
 }
 
 
+#' Perform k-fold cross validation for the continuous-categorical pliable lasso (c2plasso) model over a sequence of regularization parameter
+#'
+#' @param X N by p matrix of main predictors
+#' @param Z N by K matrix of modifying variables. Modifying variables can take the form of continuous variables or categorical variables or both. Categorical variable should be coded by dummy variables (0-1).
+#' @param Y vector of response variable
+#' @param df_Z vector of degrees of freedom for each group of modifying variables. Continuous or binary variables has one degree of freedom. Categorical variables with C categories has (C-1) degrees of freedom. For example, if there are one continuous modifying variable, one binary modifying variable and one categorical modifying variable with 4 factor levels which is expressed with 3 binary dummy variables, then df_Z = c(1,1,3).
+#' @param kfold the number of folds (=k) for the k-fold cross-validation. Default value is 10.
+#' @param lambda_seq sequence of the tuning parameter, lambda. Can take the form of a sequence or a scalar.
+#' @param alpha weight parameter between group penalty and individual penalty. Default value is 0.5.
+#' @param tt learning rate for the gradient descent procedure. Default value is 0.1.
+#' @param zlinear if true, the linear terms of the modifying variables are included. These terms are not regularized. Default value is TRUE.
+#' @param tol tolerance for convergence. Convergence is determined by the value of the objective function: abs(objective_old - objective_new) is compared with the tolerance value. Default value is 1e-7.
+#' @param iter maximum number of iteration for one lambda. Default value is 500.
+#' @param cvseed if specified, seed number for random sampling in the cross-validation procedure is fixed so the result is reproducible. If unspecified, the result is not reproducible. Default value is NULL.
+#'
+#' @return lambda_seq: lambda sequence used in the algorithm
+#' @return beta_mat: p by (length of lambda_seq) matrix of estimated beta for scaled and centered main predictors. Each column represents the vector of fitted beta for each lambda value. The order of lambda is the order of lambda_seq. For a scalar value of lambda_seq, the output is a p-dim vector of fitted beta.
+#' @return theta_mat: p by K by (length of lambda_seq) array of estimated theta for scaled and centered main predictors and modifying variables.
+#' @return beta0_vec: intercept term
+#' @return theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
+#' @return lambda_min: the lambda value which minimizes the continuous-categorical pliable lasso objective function among the values in the lambda_seq.
+#' @return lambda_1se: the largest lambda value such that the difference with minimum objective function value is within 1 standard error of the minimum
+#' @return cvm: the sequence of objective function values for lambda_seq
+#' @return cvse: the sequence of the standard error of objective function values for lambda_seq
+#' @return cvfold: (kfold) by (length of lambda_seq) matrix of the mean squared error of the test set for each fold
+#' @return sqerror: N by (length of lambda_seq) matrix of the squared error
+#' @export
+#'
+#' @examples
+#' x=matrix(rnorm(100*5, 0, 1),100,5)
+#' z1=matrix(rnorm(100*3, 0, 1),100,3)
+#' z2=matrix(as.factor(sample(0:3, 100*2, prob=c(1/4,1/4,1/4,1/4), replace = TRUE)),100,2)
+#' z2=as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
+#' z=cbind(z1, z2)
+#' z=as.matrix(z)
+#' y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
+#' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
+#' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5, cvseed = 1234)
+#' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
+#' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
 cv.c2plasso <- function(X, Z, Y, df_Z, kfold = 10, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500, cvseed = NULL){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size
