@@ -2,11 +2,7 @@ Package: c2plasso
 Type: Package
 Title: Pliable Lasso and Continuous-Categorical Pliable Lasso
 Version: 1.1.1.9000
-Author: person(given = "Rakheon",
-           family = "Kim",
-           role = c("aut", "cre"),
-           email = "rkim@stat.tamu.edu")
-Maintainer: person(given = "Rakheon",
+Authors@R: person(given = "Rakheon",
            family = "Kim",
            role = c("aut", "cre"),
            email = "rkim@stat.tamu.edu")
