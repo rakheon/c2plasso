@@ -2,15 +2,67 @@
 % Please edit documentation in R/plasso.R
 \name{cv.plasso}
 \alias{cv.plasso}
-\title{Title}
+\title{Perform k-fold cross validation for the pliable lasso model over a sequence of regularization parameter}
 \usage{
 cv.plasso(X, Z, Y, kfold = 10, lambda_seq = NULL, alpha = 0.5,
   tt = 0.1, zlinear = TRUE, tol = 1e-07, iter = 500,
   cvseed = NULL)
 }
 \arguments{
-\item{cvseed}{}
+\item{X}{N by p matrix of main predictors}
+
+\item{Z}{N by K matrix of modifying variables. Modifying variables can take the form of continuous variables or categorical variables or both. Categorical variable should be coded by dummy variables (0-1).}
+
+\item{Y}{vector of response variable}
+
+\item{kfold}{the number of folds (=k) for the k-fold cross-validation. Default value is 10.}
+
+\item{lambda_seq}{sequence of the tuning parameter, lambda. Can take the form of a sequence or a scalar.}
+
+\item{alpha}{weight parameter between group penalty and individual penalty. Default value is 0.5.}
+
+\item{tt}{learning rate for the gradient descent procedure. Default value is 0.1.}
+
+\item{zlinear}{if true, the linear terms of the modifying variables are included. These terms are not regularized. Default value is TRUE.}
+
+\item{tol}{tolerance for convergence. Convergence is determined by the value of the objective function: abs(objective_old - objective_new) is compared with the tolerance value. Default value is 1e-7.}
+
+\item{iter}{maximum number of iteration for one lambda. Default value is 500.}
+
+\item{cvseed}{if specified, seed number for random sampling in the cross-validation procedure is fixed so the result is reproducible. If unspecified, the result is not reproducible. Default value is NULL.}
+}
+\value{
+lambda_seq: lambda sequence used in the algorithm
+
+beta_mat: p by (length of lambda_seq) matrix of estimated beta for scaled and centered main predictors. Each column represents the vector of fitted beta for each lambda value. The order of lambda is the order of lambda_seq. For a scalar value of lambda_seq, the output is a p-dim vector of fitted beta.
+
+theta_mat: p by K by (length of lambda_seq) array of estimated theta for scaled and centered main predictors and modifying variables.
+
+beta0_vec: intercept term
+
+theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
+
+lambda_min: the lambda value which minimizes the pliable lasso objective function among the values in the lambda_seq.
+
+lambda_1se: the largest lambda value such that the difference with minimum objective function value is within 1 standard error of the minimum
+
+cvm: the sequence of objective function values for lambda_seq
+
+cvse: the sequence of the standard error of objective function values for lambda_seq
+
+cvfold: (kfold) by (length of lambda_seq) matrix of the mean squared error of the test set for each fold
+
+sqerror: N by (length of lambda_seq) matrix of the squared error
 }
 \description{
-Title
+Perform k-fold cross validation for the pliable lasso model over a sequence of regularization parameter
+}
+\examples{
+x=matrix(rnorm(100*5, 0, 1),100,5)
+z=matrix(rnorm(100*3, 0, 1),100,3)
+y=2*x[,1] - 2*x[,2] + (2+2*z[,1]-2*z[,2])*x[,3] + rnorm(100, 0, 1)
+cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), alpha = 0.5)
+cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), alpha = 0.5, cvseed = 1234)
+cv.plasso(X = x, Z = z, Y = y, lambda_seq = 0.5, alpha = 0.5)
+cv.plasso(X = x, Z = z, Y = y, lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
 }
