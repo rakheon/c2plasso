@@ -4,7 +4,7 @@ The R package c2plasso implements continuous-categorical pliable lasso for the d
 ## Installation
 
 ```
-devtools::install_github("rakheon.kim/c2plasso", force = TRUE)
+devtools::install_github("rakheon/c2plasso", force = TRUE)
 ```
 
 ## Example
