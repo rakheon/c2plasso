@@ -19,7 +19,7 @@ z=cbind(z1, z2)
 z=as.matrix(z)
 y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
 
-# fitting c2plasso for a sequence of tuning parameters
+# fitting plasso and c2plasso for a sequence of tuning parameters
 plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), alpha = 0.5)
 c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
 
