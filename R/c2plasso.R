@@ -91,12 +91,13 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
             b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j])/N
             t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
             tg_tmp <- get_empty_list(paste0("g_",1:G))
+            screen_cond_1 <- (abs(b_tmp) <= (1-alpha)*lambda)
+            screen_cond_2 <- logical(G)
             for (kk in 1:G){
                 tg_tmp[[kk]] <- crossprod(W[[j]][,group_partition[[kk]]]) %*% theta[,j][group_partition[[kk]]]/N + t(as.matrix(W[[j]][,group_partition[[kk]]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
+                screen_cond_2[kk] <- (sqrt(sum(soft_thresh(tg_tmp[[kk]], alpha*lambda)^2)) <= (1+sqrt(df_Z[kk])/sqrt(1+K))*(1-alpha)*lambda)
             }
-            screen_cond_1 <- (abs(b_tmp) <= (1-alpha)*lambda)
-            screen_cond_2 <- (sqrt(sum(soft_thresh(t_tmp, alpha*lambda)^2)) <= (1+sum(sqrt(df_Z))/sqrt(1+K))*(1-alpha)*lambda)
-            if (screen_cond_1 == TRUE & screen_cond_2 == TRUE){
+            if (screen_cond_1 == TRUE & prod(screen_cond_2) == TRUE){
                 # If (beta,theta) = (0,0), skip to the next predictor
                 beta[j] <- 0
                 theta[,j] <- 0

@@ -1,7 +1,7 @@
 Package: c2plasso
 Type: Package
 Title: Pliable Lasso and Continuous-Categorical Pliable Lasso
-Version: 1.1.1.9000
+Version: 1.1.1.9001
 Authors@R: person(given = "Rakheon",
            family = "Kim",
            role = c("aut", "cre"),
