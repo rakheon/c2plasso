@@ -242,7 +242,7 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
 #' @return theta_mat: p by K by (length of lambda_seq) array of estimated theta for scaled and centered main predictors and modifying variables.
 #' @return beta0_vec: intercept term
 #' @return theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
-#' @return beta_raw_mat: estimated beta for raw main predictors (non-standardized).
+#' @return beta_raw_mat: estimated beta for raw main predictors (non-standardized)
 #' @return theta_raw_mat: estimated theta for raw modifying variables (non-standardized)
 #' @return beta0_raw_vec: intercept term (non-standardized)
 #' @return theta0_raw_vec: coefficient for the linear terms of the modifying variables (non-standardized)
@@ -325,6 +325,10 @@ c2plasso <- function(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zl
 #' @return theta_mat: p by K by (length of lambda_seq) array of estimated theta for scaled and centered main predictors and modifying variables.
 #' @return beta0_vec: intercept term
 #' @return theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
+#' @return beta_raw_mat: estimated beta for raw main predictors (non-standardized)
+#' @return theta_raw_mat: estimated theta for raw modifying variables (non-standardized)
+#' @return beta0_raw_vec: intercept term (non-standardized)
+#' @return theta0_raw_vec: coefficient for the linear terms of the modifying variables (non-standardized)
 #' @return lambda_min: the lambda value which minimizes the continuous-categorical pliable lasso objective function among the values in the lambda_seq.
 #' @return lambda_1se: the largest lambda value such that the difference with minimum objective function value is within 1 standard error of the minimum
 #' @return cvm: the sequence of objective function values for lambda_seq
