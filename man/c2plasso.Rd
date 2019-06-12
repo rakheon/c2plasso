@@ -39,6 +39,14 @@ beta0_vec: intercept term
 
 theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
 
+beta_raw_mat: estimated beta for raw main predictors (non-standardized).
+
+theta_raw_mat: estimated theta for raw modifying variables (non-standardized)
+
+beta0_raw_vec: intercept term (non-standardized)
+
+theta0_raw_vec: coefficient for the linear terms of the modifying variables (non-standardized)
+
 fmin_vec: vector of objective function values for the lambda_seq values.
 }
 \description{

@@ -409,6 +409,10 @@ cv.c2plasso <- function(X, Z, Y, df_Z, kfold = 10, lambda_seq = NULL, alpha = 0.
     beta0_vec <- c2plassofit$beta0_vec
     theta_mat <- c2plassofit$theta_mat
     theta0_vec <- c2plassofit$theta0_vec
+    beta_raw_mat <- c2plassofit$beta_raw_mat
+    beta0_raw_vec <- c2plassofit$beta0_raw_vec
+    theta_raw_mat <- c2plassofit$theta_raw_mat
+    theta0_raw_vec <- c2plassofit$theta0_raw_vec
 
-    return(list(lambda_seq = lambda_seq, beta_mat = beta_mat, theta_mat = theta_mat, beta0_vec = beta0_vec, theta0_vec = theta0_vec, lambda_min = lambda_min, lambda_1se = lambda_1se, cvm = cvm, cvse = cvse, cvfold = cvfold, sqerror = sqerror))
+    return(list(lambda_seq = lambda_seq, beta_mat = beta_mat, theta_mat = theta_mat, beta0_vec = beta0_vec, theta0_vec = theta0_vec, beta_raw_mat = beta_raw_mat, beta0_raw_vec = beta0_raw_vec, theta_raw_mat = theta_raw_mat, theta0_raw_vec = theta0_raw_vec, lambda_min = lambda_min, lambda_1se = lambda_1se, cvm = cvm, cvse = cvse, cvfold = cvfold, sqerror = sqerror))
 }
