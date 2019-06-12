@@ -206,11 +206,11 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
     for (i in 1:p){
         WW[[i]] <- X[,i] * Z
     }
-    full_res_raw <- Y - (X %*% beta_raw)
+    full_res_raw <- Y - (as.matrix(X) %*% beta_raw)
     for (jj in 1:p){
         full_res_raw <- full_res_raw - (as.matrix(WW[[jj]]) %*% theta_raw[,jj])
     }
-    lmmodel_raw <- lm(full_res_raw~Z)
+    lmmodel_raw <- lm(full_res_raw~as.matrix(Z))
     if (zlinear == FALSE){
         beta0_raw <- mean(full_res_raw)
         theta0_raw <- rep(0, K)
