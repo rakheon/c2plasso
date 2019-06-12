@@ -197,7 +197,7 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
         fmin=object_c2plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, group_partition, G, alpha, lambda)
         error=abs(object_c2plasso(beta_old, theta_old, beta0_old, theta0_old, Xtilde, Ytilde0, Ztilde, W, group_partition, G, alpha, lambda)-object_c2plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, group_partition, G, alpha, lambda))
     }
-    print(c("iteration number: ",itr))
+    #print(c("iteration number: ",itr))
 
     beta_raw <- beta*(1/SXYZ$Xweights)
     theta_raw <- theta*matrix((1/SXYZ$Xweights), K, p, byrow = TRUE)*matrix((1/SXYZ$Zweights), K, p, byrow = FALSE)
@@ -282,6 +282,7 @@ c2plasso <- function(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zl
     theta0_vec=matrix(NA, K, length(lambda_seq)); theta0_raw_vec=matrix(NA, K, length(lambda_seq))
 
     # Starting beta and theta of Warm Start is zero vector and matrix
+    print(c("lambda: ",lambda_seq[1]))
     fit <- c2plasso1(X, Z, Y, df_Z, lambda_seq[1], alpha = alpha, tt = tt, beta = NULL, theta = NULL, zlinear = zlinear, tol = tol, iter = iter)
     para_array[,1,1] <- fit$actual_coef$main_coef; para_array[,-1,1] <- t(fit$actual_coef$modifying_coef)
     para_array_raw[,1,1] <- fit$raw_coef$main_coef; para_array_raw[,-1,1] <- t(fit$raw_coef$modifying_coef)
@@ -291,6 +292,7 @@ c2plasso <- function(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zl
     # Carry over previous beta for Warm Start
     if (length(lambda_seq) > 1){
         for (i in 2:length(lambda_seq)){
+            print(c("lambda: ",lambda_seq[i]))
             fit <- c2plasso1(X, Z, Y, df_Z, lambda_seq[i], alpha = alpha, tt = tt, beta = para_array[,1,i-1], theta = t(para_array[,-1,i-1]), zlinear = zlinear, tol = tol, iter = iter)
             para_array[,1,i] <- fit$actual_coef$main_coef; para_array[,-1,i] <- t(fit$actual_coef$modifying_coef)
             para_array_raw[,1,i] <- fit$raw_coef$main_coef; para_array_raw[,-1,i] <- t(fit$raw_coef$modifying_coef)
@@ -368,6 +370,8 @@ cv.c2plasso <- function(X, Z, Y, df_Z, kfold = 10, lambda_seq = NULL, alpha = 0.
     sqerror <- matrix(NA, N, n_lambda)
     cvfold <- matrix(NA, kfold, n_lambda)
     for (fold in 1:kfold){
+
+        print(c("fold: ", fold))
 
         # Training data
         xtrain = X[idfold != fold, ]
