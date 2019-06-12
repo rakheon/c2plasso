@@ -140,7 +140,24 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
     beta_raw <- beta*(1/SXYZ$Xweights)
     theta_raw <- theta*matrix((1/SXYZ$Xweights), K, p, byrow = TRUE)*matrix((1/SXYZ$Zweights), K, p, byrow = FALSE)
 
-    return(list("average_coef"=c(beta, rowSums(theta)), "actual_coef"=list("main_coef"=beta, "modifying_coef"=theta), "raw_coef"=list("main_coef"=beta_raw, "modifying_coef"=theta_raw), "intercept"=list("beta0"=beta0, "theta0"=theta0), "fmin"=fmin))
+    WW <- get_empty_list(paste0("WW_",1:p))
+    for (i in 1:p){
+        WW[[i]] <- X[,i] * Z
+    }
+    full_res_raw <- Y - (X %*% beta_raw)
+    for (jj in 1:p){
+        full_res_raw <- full_res_raw - (as.matrix(WW[[jj]]) %*% theta_raw[,jj])
+    }
+    lmmodel_raw <- lm(full_res_raw~Z)
+    if (zlinear == FALSE){
+        beta0_raw <- mean(full_res_raw)
+        theta0_raw <- rep(0, K)
+    } else {
+        beta0_raw <- lmmodel_raw$coefficients[1]
+        theta0_raw <- lmmodel_raw$coefficients[-1]
+    }
+
+    return(list("average_coef"=c(beta, rowSums(theta)), "actual_coef"=list("main_coef"=beta, "modifying_coef"=theta), "raw_coef"=list("main_coef"=beta_raw, "modifying_coef"=theta_raw), "intercept"=list("beta0"=beta0, "theta0"=theta0), "intercept_raw"=list("beta0_raw"=beta0_raw, "theta0_raw"=theta0_raw), "fmin"=fmin))
 
 }
 
@@ -162,6 +179,10 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
 #' @return theta_mat: p by K by (length of lambda_seq) array of estimated theta for scaled and centered main predictors and modifying variables.
 #' @return beta0_vec: intercept term
 #' @return theta0_vec: coefficient for the linear terms of the modifying variables. If zlinear = FALSE, the output is the vector of zeros.
+#' @return beta_raw_mat: estimated beta for raw main predictors (non-standardized).
+#' @return theta_raw_mat: estimated theta for raw modifying variables (non-standardized)
+#' @return beta0_raw_vec: intercept term (non-standardized)
+#' @return theta0_raw_vec: coefficient for the linear terms of the modifying variables (non-standardized)
 #' @return fmin_vec: vector of objective function values for the lambda_seq values.
 #' @export
 #'
@@ -188,27 +209,31 @@ plasso <- function(X, Z, Y, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = 
         stop("lambda_seq must be specified")
     }
 
-    para_array=array(NA, c(p, K+1,length(lambda_seq)))
+    para_array=array(NA, c(p, K+1,length(lambda_seq))); para_array_raw=array(NA, c(p, K+1,length(lambda_seq)))
     fmin_vec=rep(NA,length(lambda_seq))
-    beta0_vec=rep(NA,length(lambda_seq))
-    theta0_vec=matrix(NA, K, length(lambda_seq))
+    beta0_vec=rep(NA,length(lambda_seq)); beta0_raw_vec=rep(NA,length(lambda_seq))
+    theta0_vec=matrix(NA, K, length(lambda_seq)); theta0_raw_vec=matrix(NA, K, length(lambda_seq))
 
     # Starting beta and theta of Warm Start is zero vector and matrix
     fit <- plasso1(X, Z, Y, lambda_seq[1], alpha = alpha, tt = tt, beta = NULL, theta = NULL, zlinear = zlinear, tol = tol, iter = iter)
     para_array[,1,1] <- fit$actual_coef$main_coef; para_array[,-1,1] <- t(fit$actual_coef$modifying_coef)
+    para_array_raw[,1,1] <- fit$raw_coef$main_coef; para_array_raw[,-1,1] <- t(fit$raw_coef$modifying_coef)
     beta0_vec[1] <- fit$intercept$beta0; theta0_vec[,1] <- fit$intercept$theta0
+    beta0_raw_vec[1] <- fit$intercept_raw$beta0_raw; theta0_raw_vec[,1] <- fit$intercept_raw$theta0_raw
     fmin_vec[1] <- fit$fmin
     # Carry over previous beta for Warm Start
     if (length(lambda_seq) > 1){
         for (i in 2:length(lambda_seq)){
             fit <- plasso1(X, Z, Y, lambda_seq[i], alpha = alpha, tt = tt, beta = para_array[,1,i-1], theta = t(para_array[,-1,i-1]), zlinear = zlinear, tol = tol, iter = iter)
             para_array[,1,i] <- fit$actual_coef$main_coef; para_array[,-1,i] <- t(fit$actual_coef$modifying_coef)
+            para_array_raw[,1,i] <- fit$raw_coef$main_coef; para_array_raw[,-1,i] <- t(fit$raw_coef$modifying_coef)
             beta0_vec[i] <- fit$intercept$beta0; theta0_vec[,i] <- fit$intercept$theta0
+            beta0_raw_vec[i] <- fit$intercept_raw$beta0_raw; theta0_raw_vec[,i] <- fit$intercept_raw$theta0_raw
             fmin_vec[i] <- fit$fmin
         }
     }
 
-    return(list(lambda_seq = lambda_seq, beta_mat = para_array[,1,], theta_mat = para_array[,-1,], beta0_vec = beta0_vec, theta0_vec = theta0_vec, fmin_vec = fmin_vec))
+    return(list(lambda_seq = lambda_seq, beta_mat = para_array[,1,], theta_mat = para_array[,-1,], beta0_vec = beta0_vec, theta0_vec = theta0_vec, beta_raw_mat = para_array_raw[,1,], theta_raw_mat = para_array_raw[,-1,], beta0_raw_vec = beta0_raw_vec, theta0_raw_vec = theta0_raw_vec, fmin_vec = fmin_vec))
 
 }
 
