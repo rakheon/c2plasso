@@ -4,8 +4,18 @@
 \alias{c2plasso}
 \title{Fit the continuous-categorical pliable lasso (c2plasso) in the linear regression setting}
 \usage{
-c2plasso(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1,
-  zlinear = TRUE, tol = 1e-07, iter = 500)
+c2plasso(
+  X,
+  Z,
+  Y,
+  df_Z,
+  lambda_seq = NULL,
+  alpha = 0.5,
+  tt = 0.1,
+  zlinear = TRUE,
+  tol = 1e-07,
+  iter = 500
+)
 }
 \arguments{
 \item{X}{N by p matrix of main predictors}

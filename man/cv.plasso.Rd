@@ -4,9 +4,19 @@
 \alias{cv.plasso}
 \title{Perform k-fold cross validation for the pliable lasso model over a sequence of regularization parameter}
 \usage{
-cv.plasso(X, Z, Y, kfold = 10, lambda_seq = NULL, alpha = 0.5,
-  tt = 0.1, zlinear = TRUE, tol = 1e-07, iter = 500,
-  cvseed = NULL)
+cv.plasso(
+  X,
+  Z,
+  Y,
+  kfold = 10,
+  lambda_seq = NULL,
+  alpha = 0.5,
+  tt = 0.1,
+  zlinear = TRUE,
+  tol = 1e-07,
+  iter = 500,
+  cvseed = NULL
+)
 }
 \arguments{
 \item{X}{N by p matrix of main predictors}

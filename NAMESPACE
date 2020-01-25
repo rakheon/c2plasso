@@ -3,4 +3,6 @@
 export(c2plasso)
 export(cv.c2plasso)
 export(cv.plasso)
+export(cv.svReg)
 export(plasso)
+export(svReg)

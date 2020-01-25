@@ -4,8 +4,17 @@
 \alias{plasso}
 \title{Fit the pliable lasso in the linear regression setting}
 \usage{
-plasso(X, Z, Y, lambda_seq = NULL, alpha = 0.5, tt = 0.1,
-  zlinear = TRUE, tol = 1e-07, iter = 500)
+plasso(
+  X,
+  Z,
+  Y,
+  lambda_seq = NULL,
+  alpha = 0.5,
+  tt = 0.1,
+  zlinear = TRUE,
+  tol = 1e-07,
+  iter = 500
+)
 }
 \arguments{
 \item{X}{N by p matrix of main predictors}
