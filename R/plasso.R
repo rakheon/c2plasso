@@ -58,7 +58,11 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
         beta0 <- lmmodel$coefficients[1]
         theta0 <- lmmodel$coefficients[-1]
     }
-    Ytilde <- Ytilde0 - beta0 - Ztilde %*% theta0
+    #Ytilde <- Ytilde0 - beta0 - Ztilde %*% theta0
+    Ytilde <- Ytilde0 - beta0 - Ztilde %*% theta0 - Xtilde %*% beta
+    for (jj in 1:p){
+        Ytilde <- Ytilde - (as.matrix(W[[jj]]) %*% theta[,jj])
+    }
     full_res2 <- Ytilde
 
     while (error>tol && itr < iter){
@@ -135,7 +139,7 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
         fmin=object_plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, alpha, lambda)
         error=abs(object_plasso(beta_old, theta_old, beta0_old, theta0_old, Xtilde, Ytilde0, Ztilde, W, alpha, lambda)-object_plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, alpha, lambda))
     }
-    #print(c("iteration number: ",itr))
+    print(c("iteration number: ",itr))
 
     beta_raw <- beta*(1/SXYZ$Xweights)
     theta_raw <- theta*matrix((1/SXYZ$Xweights), K, p, byrow = TRUE)*matrix((1/SXYZ$Zweights), K, p, byrow = FALSE)
