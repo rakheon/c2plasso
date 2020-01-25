@@ -120,9 +120,11 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
                     screen_cond_2_val[,m] <- soft_thresh(tg_tmp[[kk]][,m], alpha*lambda)^2
                 }
                 #tg_tmp[[kk]] <- crossprod(W[[j]][,group_partition[[kk]]]) %*% theta[,j][group_partition[[kk]]]/N + t(as.matrix(W[[j]][,group_partition[[kk]]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
-                screen_cond_2[kk] <- (sqrt(sum(screen_cond_2_val)) <= (1+sqrt(df_Z[kk])/sqrt(1+K))*(1-alpha)*lambda)
+                screen_cond_2[kk] <- (sqrt(sum(screen_cond_2_val)) <= (sqrt(df_X[l])+sqrt(df_Z[kk])/sqrt(1+K))*(1-alpha)*lambda)
+                #screen_cond_2[kk] <- (sqrt(sum(screen_cond_2_val)) <= (1+sqrt(df_Z[kk])/sqrt(1+K))*(1-alpha)*lambda)
             }
-            screen_cond_1 <- (sqrt(sum(b_tmp^2)) <= (1-alpha)*lambda)
+            screen_cond_1 <- (sqrt(sum(b_tmp^2)) <= sqrt(df_X[l])*(1-alpha)*lambda)
+            #screen_cond_1 <- (sqrt(sum(b_tmp^2)) <= (1-alpha)*lambda)
             #screen_cond_1 <- (abs(b_tmp) <= (1-alpha)*lambda)
             #screen_cond_2 <- (sqrt(sum(soft_thresh(t_tmp, alpha*lambda)^2)) <= (1+sum(sqrt(df_Z))/sqrt(1+K))*(1-alpha)*lambda)
             #print(screen_cond_1)
@@ -193,21 +195,26 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
                             #grad_theta[[i]] <- -(1/N) * ( t(as.matrix(W[[j]][,nz_group_partition[[i]]])) %*% res )
                             #g2[i] <- sqrt(sum(soft_thresh(theta[,j][nz_group_partition[[i]]] - t*grad_theta[[i]], t*alpha*lambda)^2))
                         }
-                        r1 <- -c+sqrt(c^2-2*c*sum(g2*sqrt(nzdf_Z)/sqrt(1+K))+g1^2+sum(g2^2)-(1-sum(nzdf_Z)/(1+K))*(c^2))
-                        r2 <- -c-sqrt(c^2-2*c*sum(g2*sqrt(nzdf_Z)/sqrt(1+K))+g1^2+sum(g2^2)-(1-sum(nzdf_Z)/(1+K))*(c^2))
+                        r1 <- -c*sqrt(df_X[l])+sqrt((c^2)*df_X[l]-2*c*sum(g2*sqrt(nzdf_Z)/sqrt(1+K))+g1^2+sum(g2^2)-(df_X[l]-sum(nzdf_Z)/(1+K))*(c^2))
+                        r2 <- -c*sqrt(df_X[l])-sqrt((c^2)*df_X[l]-2*c*sum(g2*sqrt(nzdf_Z)/sqrt(1+K))+g1^2+sum(g2^2)-(df_X[l]-sum(nzdf_Z)/(1+K))*(c^2))
+                        #r1 <- -c+sqrt((c^2)-2*c*sum(g2*sqrt(nzdf_Z)/sqrt(1+K))+g1^2+sum(g2^2)-(1-sum(nzdf_Z)/(1+K))*(c^2))
+                        #r2 <- -c-sqrt((c^2)-2*c*sum(g2*sqrt(nzdf_Z)/sqrt(1+K))+g1^2+sum(g2^2)-(1-sum(nzdf_Z)/(1+K))*(c^2))
                         # a: norm of beta, b: norm of theta
                         # Hence, we choose the largest value of a and b to take positive value
                         #a <- max(g1*r1/(c+r1), g1*r2/(c+r2), g1*r1/(c+r2), g1*r2/(c+r1))
                         #b <- max((g2-c)*r2/(c+r2), (g2-c)*r1/(c+r1), (g2-c)*r1/(c+r2), (g2-c)*r2/(c+r1))
-                        a <- max(g1*r1/(c+r1), g1*r2/(c+r2), g1*r1/(c+r2), g1*r2/(c+r1))
+                        a <- max(g1*r1/(c*sqrt(df_X[l])+r1), g1*r2/(c*sqrt(df_X[l])+r2), g1*r1/(c*sqrt(df_X[l])+r2), g1*r2/(c*sqrt(df_X[l])+r1))
                         b <- numeric(nzG)
                         for (i in 1:nzG){
-                            b[i] <- max((g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r2/(c+r2), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r1/(c+r1), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r1/(c+r2), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r2/(c+r1))
+                            b[i] <- max((g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r2/(c*sqrt(df_X[l])+r2), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r1/(c*sqrt(df_X[l])+r1), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r1/(c*sqrt(df_X[l])+r2), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r2/(c*sqrt(df_X[l])+r1))
+                            #b[i] <- max((g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r2/(c+r2), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r1/(c+r1), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r1/(c+r2), (g2[i]-c*sqrt(nzdf_Z[i])/sqrt(1+K))*r2/(c+r1))
                         }
-                        c1 <- 1+t*(1-alpha)*lambda/sqrt(a^2+sum(b^2))
+                        c1 <- 1+t*sqrt(df_X[l])*(1-alpha)*lambda/sqrt(a^2+sum(b^2))
+                        #c1 <- 1+t*(1-alpha)*lambda/sqrt(a^2+sum(b^2))
                         c2 <- numeric(nzG)
                         for (i in 1:nzG){
-                            c2[i] <- 1+t*(1-alpha)*lambda*(sqrt(nzdf_Z[i])/sqrt(1+K)*1/b[i]+1/sqrt(a^2+sum(b^2)))
+                            c2[i] <- 1+t*(1-alpha)*lambda*(sqrt(nzdf_Z[i])/sqrt(1+K)*1/b[i]+sqrt(df_X[l])/sqrt(a^2+sum(b^2)))
+                            #c2[i] <- 1+t*(1-alpha)*lambda*(sqrt(nzdf_Z[i])/sqrt(1+K)*1/b[i]+1/sqrt(a^2+sum(b^2)))
                         }
                         beta[j] <- (beta[j] - t*grad_beta)/c1
                         for (i in 1:nzG){
