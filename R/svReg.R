@@ -136,7 +136,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
             } else {
                 # If (beta,theta) != (0,0), compute beta_hat and check theta=0
                 beta_check <- beta
-                beta_check[j] <- max(1-(1-alpha)*lambda/sqrt(sum(b_tmp^2)), 0)*b_tmp
+                beta_check[j] <- max(1-sqrt(df_X[l])*(1-alpha)*lambda/sqrt(sum(b_tmp^2)), 0)*b_tmp
                 #beta_check[j] <- N/sum(Xtilde[,j]^2) * soft_thresh(b_tmp, (1-alpha)*lambda)
 
                 screen_cond_3G <- logical(G)
@@ -262,6 +262,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
 
         fmin=object_svReg(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, main_partition, L, group_partition, G, alpha, lambda)
         error=abs(object_svReg(beta_old, theta_old, beta0_old, theta0_old, Xtilde, Ytilde0, Ztilde, W, main_partition, L, group_partition, G, alpha, lambda)-object_svReg(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, main_partition, L, group_partition, G, alpha, lambda))
+        #print(error)
         #print(beta)
         #print(theta)
         #if (sum(beta, theta)==0){itr <- iter}
@@ -355,6 +356,7 @@ svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt
     theta0_vec=matrix(NA, K, length(lambda_seq)); theta0_raw_vec=matrix(NA, K, length(lambda_seq))
 
     # Starting beta and theta of Warm Start is zero vector and matrix
+    print(c("lambda: ",lambda_seq[1]))
     fit <- svReg1(X, Z, Y, df_X, df_Z, lambda_seq[1], alpha = alpha, tt = tt, beta = NULL, theta = NULL, zlinear = zlinear, tol = tol, iter = iter)
     para_array[,1,1] <- fit$actual_coef$main_coef; para_array[,-1,1] <- t(fit$actual_coef$modifying_coef)
     para_array_raw[,1,1] <- fit$raw_coef$main_coef; para_array_raw[,-1,1] <- t(fit$raw_coef$modifying_coef)
@@ -364,6 +366,7 @@ svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt
     # Carry over previous beta for Warm Start
     if (length(lambda_seq) > 1){
         for (i in 2:length(lambda_seq)){
+            print(c("lambda: ",lambda_seq[i]))
             fit <- svReg1(X, Z, Y, df_X, df_Z, lambda_seq[i], alpha = alpha, tt = tt, beta = para_array[,1,i-1], theta = t(para_array[,-1,i-1]), zlinear = zlinear, tol = tol, iter = iter)
             para_array[,1,i] <- fit$actual_coef$main_coef; para_array[,-1,i] <- t(fit$actual_coef$modifying_coef)
             para_array_raw[,1,i] <- fit$raw_coef$main_coef; para_array_raw[,-1,i] <- t(fit$raw_coef$modifying_coef)

@@ -219,7 +219,7 @@ plasso <- function(X, Z, Y, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = 
     theta0_vec=matrix(NA, K, length(lambda_seq)); theta0_raw_vec=matrix(NA, K, length(lambda_seq))
 
     # Starting beta and theta of Warm Start is zero vector and matrix
-    #print(c("lambda: ",lambda_seq[1]))
+    print(c("lambda: ",lambda_seq[1]))
     fit <- plasso1(X, Z, Y, lambda_seq[1], alpha = alpha, tt = tt, beta = NULL, theta = NULL, zlinear = zlinear, tol = tol, iter = iter)
     para_array[,1,1] <- fit$actual_coef$main_coef; para_array[,-1,1] <- t(fit$actual_coef$modifying_coef)
     para_array_raw[,1,1] <- fit$raw_coef$main_coef; para_array_raw[,-1,1] <- t(fit$raw_coef$modifying_coef)
@@ -229,7 +229,7 @@ plasso <- function(X, Z, Y, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = 
     # Carry over previous beta for Warm Start
     if (length(lambda_seq) > 1){
         for (i in 2:length(lambda_seq)){
-            #print(c("lambda: ",lambda_seq[i]))
+            print(c("lambda: ",lambda_seq[i]))
             fit <- plasso1(X, Z, Y, lambda_seq[i], alpha = alpha, tt = tt, beta = para_array[,1,i-1], theta = t(para_array[,-1,i-1]), zlinear = zlinear, tol = tol, iter = iter)
             para_array[,1,i] <- fit$actual_coef$main_coef; para_array[,-1,i] <- t(fit$actual_coef$modifying_coef)
             para_array_raw[,1,i] <- fit$raw_coef$main_coef; para_array_raw[,-1,i] <- t(fit$raw_coef$modifying_coef)
