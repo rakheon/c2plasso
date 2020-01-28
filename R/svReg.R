@@ -275,7 +275,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
     for (i in 1:p){
         WW[[i]] <- X[,i] * Z
     }
-    print(beta_raw)
+    #print(beta_raw)
     full_res_raw <- Y - (as.matrix(X) %*% beta_raw)
     for (jj in 1:p){
         full_res_raw <- full_res_raw - (as.matrix(WW[[jj]]) %*% theta_raw[,jj])
