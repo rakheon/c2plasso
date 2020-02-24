@@ -92,8 +92,12 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
         for (j in 1:p){
 
             # check (beta,theta) = (0,0)
-            b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j])/N
-            t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
+            b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2)/N
+            t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2)/N
+            #b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j])/N
+            #t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
+            #b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j] + Xtilde[,j]*matrix(beta[j], N))/N
+            #t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j] + Xtilde[,j]*matrix(beta[j], N) )/N
             tg_tmp <- get_empty_list(paste0("g_",1:G))
             screen_cond_1 <- (abs(b_tmp) <= (1-alpha)*lambda)
             screen_cond_2 <- logical(G)
@@ -200,8 +204,10 @@ c2plasso1 <- function(X, Z, Y, df_Z, lambda = 0.5, alpha = 0.5, tt = 0.1, beta =
 
         fmin=object_c2plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, group_partition, G, alpha, lambda)
         error=abs(object_c2plasso(beta_old, theta_old, beta0_old, theta0_old, Xtilde, Ytilde0, Ztilde, W, group_partition, G, alpha, lambda)-object_c2plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, group_partition, G, alpha, lambda))
+        #print(error)
+        #print(beta[1:8])
     }
-    #print(c("iteration number: ",itr))
+    print(c("iteration number: ",itr, "error: ", error))
 
     beta_raw <- beta*(1/SXYZ$Xweights)
     theta_raw <- theta*matrix((1/SXYZ$Xweights), K, p, byrow = TRUE)*matrix((1/SXYZ$Zweights), K, p, byrow = FALSE)

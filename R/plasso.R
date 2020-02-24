@@ -33,11 +33,13 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
         beta <- matrix(0, ncol = 1, nrow = p)
     } else {
         beta <- beta
+        #beta <- matrix(0, ncol = 1, nrow = p)
     }
     if (is.null(theta)){
         theta <- matrix(0, ncol = p, nrow = K)
     } else {
         theta <- theta
+        #theta <- matrix(0, ncol = p, nrow = K)
     }
 
     # Initialize the settings
@@ -76,8 +78,16 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
         for (j in 1:p){
 
             # check (beta,theta) = (0,0)
-            b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j])/N
-            t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
+            b_update = as.matrix(W[[j]]) %*% as.matrix(theta[,j])
+            t_update = as.matrix(Xtilde[,j])*matrix(beta[j], N)
+            b_tmp <- t(Xtilde[,j]) %*% (full_res2 + b_update + t_update)/N
+            t_tmp <- t(as.matrix(W[[j]])) %*% (full_res2 + b_update + t_update)/N
+            #b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2)/N
+            #t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2)/N
+            #b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j])/N
+            #t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + Xtilde[,j]*matrix(beta[j], N) )/N
+            #b_tmp <- beta[j] + t(Xtilde[,j]) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j] + Xtilde[,j]*matrix(beta[j], N))/N
+            #t_tmp <- crossprod(W[[j]]) %*% theta[,j]/N + t(as.matrix(W[[j]])) %*% (full_res2 + as.matrix(W[[j]]) %*% theta[,j] + Xtilde[,j]*matrix(beta[j], N) )/N
             screen_cond_1 <- (abs(b_tmp) <= (1-alpha)*lambda)
             screen_cond_2 <- (sqrt(sum(soft_thresh(t_tmp, alpha*lambda)^2)) <= 2*(1-alpha)*lambda)
             if (screen_cond_1 == TRUE & screen_cond_2 == TRUE){
@@ -138,8 +148,9 @@ plasso1 <- function(X, Z, Y, lambda = 0.5, alpha = 0.5, tt = 0.1, beta = NULL, t
 
         fmin=object_plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, alpha, lambda)
         error=abs(object_plasso(beta_old, theta_old, beta0_old, theta0_old, Xtilde, Ytilde0, Ztilde, W, alpha, lambda)-object_plasso(beta, theta, beta0, theta0, Xtilde, Ytilde0, Ztilde, W, alpha, lambda))
+        #print(error)
     }
-    print(c("iteration number: ",itr))
+    print(c("iteration number: ",itr, "error: ", error))
 
     beta_raw <- beta*(1/SXYZ$Xweights)
     theta_raw <- theta*matrix((1/SXYZ$Xweights), K, p, byrow = TRUE)*matrix((1/SXYZ$Zweights), K, p, byrow = FALSE)

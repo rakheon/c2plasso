@@ -84,11 +84,11 @@ object_c2plasso <- function(bt, th, bt0, th0, Xtilde, Ytilde, Ztilde, W, group_p
 
 # Compute svReg objective function value
 object_svReg <- function(bt, th, bt0, th0, Xtilde, Ytilde, Ztilde, W, main_partition, L, group_partition, G, alpha, lambda){
-    
+
     p <- ncol(Xtilde)
     N <- nrow(Xtilde)
     K <- ncol(Ztilde)
-    
+
     diff <- Ytilde - Xtilde %*% bt - bt0 - Ztilde %*% th0
     for (i in 1:p){
         diff <- diff - W[[i]] %*% th[,i]
@@ -98,9 +98,9 @@ object_svReg <- function(bt, th, bt0, th0, Xtilde, Ytilde, Ztilde, W, main_parti
         main_group <- main_partition[[l]]
         i <- main_group
         #obj <- obj + (1-alpha)*lambda*(sqrt(bt[i]^2+sum(th[,i]^2)))
-        obj <- obj + (1-alpha)*lambda*(sqrt(sum(bt[i]^2)+sum(th[,i]^2)))
+        obj <- obj + (1-alpha)*lambda*sqrt(length(main_partition[[l]]))*(sqrt(sum(bt[i]^2)+sum(th[,i]^2)))
         for (kk in 1:G){
-            obj <- obj + (1-alpha)*lambda*sqrt(length(group_partition[[kk]])/(1+K))*sqrt(sum(th[,i][group_partition[[kk]]]^2))
+            obj <- obj + (1-alpha)*lambda*sqrt(length(main_partition[[l]]))*sqrt(length(group_partition[[kk]])/(1+K))*sqrt(sum(th[,i][group_partition[[kk]]]^2))
         }
     }
     obj <- obj + alpha*lambda*sum(abs(th))
