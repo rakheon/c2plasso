@@ -2,7 +2,7 @@
 % Please edit documentation in R/svReg.R
 \name{cv.svReg}
 \alias{cv.svReg}
-\title{Perform k-fold cross validation for the continuous-categorical pliable lasso (c2plasso) model over a sequence of regularization parameter}
+\title{Perform k-fold cross validation for the structural varying-coefficient regression (svReg) model over a sequence of regularization parameter}
 \usage{
 cv.svReg(
   X,
@@ -27,7 +27,9 @@ cv.svReg(
 
 \item{Y}{vector of response variable}
 
-\item{df_Z}{vector of degrees of freedom for each group of modifying variables. Continuous or binary variables has one degree of freedom. Categorical variables with C categories has (C-1) degrees of freedom. For example, if there are one continuous modifying variable, one binary modifying variable and one categorical modifying variable with 4 factor levels which is expressed with 3 binary dummy variables, then df_Z = c(1,1,3).}
+\item{df_X}{vector of degrees of freedom for each group of main predictors.}
+
+\item{df_Z}{vector of degrees of freedom for each group of modifying variables.}
 
 \item{kfold}{the number of folds (=k) for the k-fold cross-validation. Default value is 10.}
 
@@ -77,7 +79,7 @@ cvfold: (kfold) by (length of lambda_seq) matrix of the mean squared error of th
 sqerror: N by (length of lambda_seq) matrix of the squared error
 }
 \description{
-Perform k-fold cross validation for the continuous-categorical pliable lasso (c2plasso) model over a sequence of regularization parameter
+Perform k-fold cross validation for the structural varying-coefficient regression (svReg) model over a sequence of regularization parameter
 }
 \examples{
 x=matrix(rnorm(100*5, 0, 1),100,5)
@@ -87,8 +89,11 @@ z2=as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
 z=cbind(z1, z2)
 z=as.matrix(z)
 y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
-cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
-cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5, cvseed = 1234)
-cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
-cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
+cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5, cvseed = 1234)
+cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
+cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+x[,3] = 2/3*x[,1] + 2/3*x[,2] + 1/3*rnorm(100, 0, 1)
+y = x[,1] + x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,4] + rnorm(100, 0, 1)
+cv.svReg(X = x, Z = z, Y = y, df_X = c(3,1,1), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/svReg.R
 \name{svReg}
 \alias{svReg}
-\title{Fit the continuous-categorical pliable lasso (c2plasso) in the linear regression setting}
+\title{Fit the structural varying-coefficient regression (svReg) in the linear regression setting}
 \usage{
 svReg(
   X,
@@ -25,7 +25,9 @@ svReg(
 
 \item{Y}{vector of response variable}
 
-\item{df_Z}{vector of degrees of freedom for each group of modifying variables. Continuous or binary variables has one degree of freedom. Categorical variables with C categories has (C-1) degrees of freedom. For example, if there are one continuous modifying variable, one binary modifying variable and one categorical modifying variable with 4 factor levels which is expressed with 3 binary dummy variables, then df_Z = c(1,1,3).}
+\item{df_X}{vector of degrees of freedom for each group of main predictors.}
+
+\item{df_Z}{vector of degrees of freedom for each group of modifying variables.}
 
 \item{lambda_seq}{sequence of the tuning parameter, lambda. Can take the form of a sequence or a scalar.}
 
@@ -61,17 +63,20 @@ theta0_raw_vec: coefficient for the linear terms of the modifying variables (non
 fmin_vec: vector of objective function values for the lambda_seq values.
 }
 \description{
-Fit the continuous-categorical pliable lasso (c2plasso) in the linear regression setting
+Fit the structural varying-coefficient regression (svReg) in the linear regression setting
 }
 \examples{
-x=matrix(rnorm(100*5, 0, 1),100,5)
-z1=matrix(rnorm(100*3, 0, 1),100,3)
-z2=matrix(as.factor(sample(0:3, 100*2, prob=c(1/4,1/4,1/4,1/4), replace = TRUE)),100,2)
-z2=as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
-z=cbind(z1, z2)
-z=as.matrix(z)
-y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
-c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
-c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
-c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+x = matrix(rnorm(100*5, 0, 1),100,5)
+z1 = matrix(rnorm(100*3, 0, 1),100,3)
+z2 = matrix(as.factor(sample(0:3, 100*2, prob=c(1/4,1/4,1/4,1/4), replace = TRUE)),100,2)
+z2 = as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
+z = cbind(z1, z2)
+z = as.matrix(z)
+y = 2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
+svReg_res1 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
+svReg_res2 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
+svReg_res3 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+x[,3] = 2/3*x[,1] + 2/3*x[,2] + 1/3*rnorm(100, 0, 1)
+y = x[,1] + x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,4] + rnorm(100, 0, 1)
+svReg_res4 = svReg(X = x, Z = z, Y = y, df_X = c(3,1,1), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
 }
