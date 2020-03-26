@@ -185,7 +185,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
                         while (abs(obj-obj_old) > 1e-5){
                             obj_old = obj
                             for (i in 1:pp){
-                                betain[i,] = optimize(object_onedim1, c(-100,100), ot=betain[-i,], Xtilde_b=x[,i], Xtilde_o=x[,-i], Ytilde=y, lambda=lambdas)$minimum
+                                betain[i,] = stats::optimize(object_onedim1, c(-100,100), ot=betain[-i,], Xtilde_b=x[,i], Xtilde_o=x[,-i], Ytilde=y, lambda=lambdas)$minimum
                             }
                             obj = object_onedim(bt=betain, bt0=0, Xtilde=x, Ytilde=y, lambda=lambdas)
                             #print(abs(obj-obj_old))
