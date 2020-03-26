@@ -398,7 +398,8 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
 #' @param X N by p matrix of main predictors
 #' @param Z N by K matrix of modifying variables. Modifying variables can take the form of continuous variables or categorical variables or both. Categorical variable should be coded by dummy variables (0-1).
 #' @param Y vector of response variable
-#' @param df_Z vector of degrees of freedom for each group of modifying variables. Continuous or binary variables has one degree of freedom. Categorical variables with C categories has (C-1) degrees of freedom. For example, if there are one continuous modifying variable, one binary modifying variable and one categorical modifying variable with 4 factor levels which is expressed with 3 binary dummy variables, then df_Z = c(1,1,3).
+#' @param df_X vector of degrees of freedom for each group of main predictors.
+#' @param df_Z vector of degrees of freedom for each group of modifying variables.
 #' @param lambda_seq sequence of the tuning parameter, lambda. Can take the form of a sequence or a scalar.
 #' @param alpha weight parameter between group penalty and individual penalty. Default value is 0.5.
 #' @param tt learning rate for the gradient descent procedure. Default value is 0.1.
@@ -419,16 +420,19 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
 #' @export
 #'
 #' @examples
-#' x=matrix(rnorm(100*5, 0, 1),100,5)
-#' z1=matrix(rnorm(100*3, 0, 1),100,3)
-#' z2=matrix(as.factor(sample(0:3, 100*2, prob=c(1/4,1/4,1/4,1/4), replace = TRUE)),100,2)
-#' z2=as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
-#' z=cbind(z1, z2)
-#' z=as.matrix(z)
-#' y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
-#' c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
-#' c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
-#' c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+#' x = matrix(rnorm(100*5, 0, 1),100,5)
+#' z1 = matrix(rnorm(100*3, 0, 1),100,3)
+#' z2 = matrix(as.factor(sample(0:3, 100*2, prob=c(1/4,1/4,1/4,1/4), replace = TRUE)),100,2)
+#' z2 = as.data.frame(model.matrix(~., data=as.data.frame(z2))[,-1])
+#' z = cbind(z1, z2)
+#' z = as.matrix(z)
+#' y = 2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
+#' svReg_res1 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
+#' svReg_res2 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
+#' svReg_res3 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+#' x[,3] = 2/3*x[,1] + 2/3*x[,2] + 1/3*rnorm(100, 0, 1)
+#' y = x[,1] + x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,4] + rnorm(100, 0, 1)
+#' svReg_res4 = svReg(X = x, Z = z, Y = y, df_X = c(3,1,1), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
 svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size
