@@ -488,7 +488,7 @@ svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt
 #' @param df_X vector of degrees of freedom for each group of main predictors.
 #' @param df_Z vector of degrees of freedom for each group of modifying variables.
 #' @param kfold the number of folds (=k) for the k-fold cross-validation. Default value is 10.
-#' @param lambda_seq sequence of the tuning parameter, lambda. Can take the form of a sequence or a scalar.
+#' @param lambda_seq sequence of the tuning parameter, lambda. The length of the sequence should be greater than 1.
 #' @param alpha weight parameter between group penalty and individual penalty. Default value is 0.5.
 #' @param tt learning rate for the gradient descent procedure. Default value is 0.1.
 #' @param zlinear if true, the linear terms of the modifying variables are included. These terms are not regularized. Default value is TRUE.
@@ -523,11 +523,10 @@ svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt
 #' y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
 #' cv.svReg_res1 = cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
 #' cv.svReg_res2 = cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5, cvseed = 1234)
-#' cv.svReg_res3 = cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5)
-#' cv.svReg_res4 = cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+#' cv.svReg_res3 = cv.svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
 #' x[,3] = 2/3*x[,1] + 2/3*x[,2] + 1/3*rnorm(100, 0, 1)
 #' y = x[,1] + x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,4] + rnorm(100, 0, 1)
-#' cv.svReg_res5 = cv.svReg(X = x, Z = z, Y = y, df_X = c(3,1,1), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
+#' cv.svReg_res4 = cv.svReg(X = x, Z = z, Y = y, df_X = c(3,1,1), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), alpha = 0.5)
 cv.svReg <- function(X, Z = NULL, Y, df_X, df_Z, kfold = 10, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500, cvseed = NULL){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size
