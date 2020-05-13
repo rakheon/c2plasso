@@ -90,7 +90,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
         full_res <- full_res - (as.matrix(W[[jj]]) %*% theta[,jj])
     }
     Ytilde0 <- Ytilde
-    lmmodel <- lm(full_res~Ztilde)
+    lmmodel <- stats::lm(full_res~Ztilde)
     if (zlinear == FALSE){
         beta0 <- mean(full_res)
         theta0 <- rep(0, K)
@@ -341,7 +341,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
             #}
 
             if (!is.null(Z)){
-                lmmodel <- lm(full_res~Ztilde)
+                lmmodel <- stats::lm(full_res~Ztilde)
                 if (zlinear == FALSE){
                     beta0 <- mean(full_res)
                     theta0 <- rep(0, K)
@@ -376,7 +376,7 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
     for (jj in 1:p){
         full_res_raw <- full_res_raw - (as.matrix(WW[[jj]]) %*% theta_raw[,jj])
     }
-    lmmodel_raw <- lm(full_res_raw~as.matrix(Z))
+    lmmodel_raw <- stats::lm(full_res_raw~as.matrix(Z))
     if (zlinear == FALSE){
         beta0_raw <- mean(full_res_raw)
         theta0_raw <- rep(0, K)
@@ -573,7 +573,7 @@ cv.svReg <- function(X, Z = NULL, Y, df_X, df_Z, kfold = 10, lambda_seq = NULL, 
 
     # Calculate CV(lambda) and SE_CV(lambda) for each value of lambda
     cvm <- colMeans(sqerror)
-    cvse <- apply(cvfold, 2, sd)/sqrt(kfold)
+    cvse <- apply(cvfold, 2, stats::sd)/sqrt(kfold)
 
     # Find lambda_min
     lambda_min <- c2plassofit$lambda_seq[which.min(cvm)]
