@@ -360,7 +360,7 @@ c2plasso <- function(X, Z, Y, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zl
 #' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5))
 #' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5), cvseed = 1)
 #' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5)
-#' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, zlinear = F)
+#' cv.c2plasso(X = x, Z = z, Y = y, df_Z = c(1,1,1,3,3), lambda_seq = 0.5, zlinear = FALSE)
 cv.c2plasso <- function(X, Z, Y, df_Z, kfold = 10, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500, cvseed = NULL){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size

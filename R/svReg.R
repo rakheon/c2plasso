@@ -427,12 +427,12 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
 #' z = cbind(z1, z2)
 #' z = as.matrix(z)
 #' y = 2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
-#' res1 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5))
-#' res2 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5)
-#' res3 = svReg(X = x, Z = z, Y = y, df_X = rep(1,5), df_Z = c(1,1,1,3,3), lambda_seq = 0.5, zlinear = F)
+#' sv1=svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=c(1,0.5))
+#' sv2=svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=0.5)
+#' sv3=svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=0.5,zlinear=FALSE)
 #' x[,3] = 2/3*x[,1] + 2/3*x[,2] + 1/3*rnorm(100, 0, 1)
 #' y = x[,1] + x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,4] + rnorm(100, 0, 1)
-#' res4 = svReg(X = x, Z = z, Y = y, df_X = c(3,1,1), df_Z = c(1,1,1,3,3), lambda_seq = c(1, 0.5))
+#' sv4=svReg(X=x,Z=z,Y=y,df_X=c(3,1,1),df_Z=c(1,1,1,3,3),lambda_seq=c(1,0.5))
 svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size
@@ -523,7 +523,7 @@ svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt
 #' y=2*x[,1] - (2+2*z[,1])*x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,3] + rnorm(100, 0, 1)
 #' cv1=cv.svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=c(1,0.5))
 #' cv2=cv.svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=c(1,0.5),cvseed=1)
-#' cv3=cv.svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=0.5,zlinear=F)
+#' cv3=cv.svReg(X=x,Z=z,Y=y,df_X=rep(1,5),df_Z=c(1,1,1,3,3),lambda_seq=0.5,zlinear=FALSE)
 #' x[,3] = 2/3*x[,1] + 2/3*x[,2] + 1/3*rnorm(100, 0, 1)
 #' y = x[,1] + x[,2] + (2+3*z[,4]+2*z[,5]-2*z[,6])*x[,4] + rnorm(100, 0, 1)
 #' cv4=cv.svReg(X=x,Z=z,Y=y,df_X=c(3,1,1),df_Z=c(1,1,1,3,3),lambda_seq=c(1,0.5))
