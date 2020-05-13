@@ -290,10 +290,9 @@ plasso <- function(X, Z, Y, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = 
 #' x=matrix(rnorm(100*5, 0, 1),100,5)
 #' z=matrix(rnorm(100*3, 0, 1),100,3)
 #' y=2*x[,1] - 2*x[,2] + (2+2*z[,1]-2*z[,2])*x[,3] + rnorm(100, 0, 1)
-#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), alpha = 0.5)
-#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), alpha = 0.5, cvseed = 1234)
-#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = 0.5, alpha = 0.5)
-#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = 0.5, alpha = 0.5, zlinear = FALSE)
+#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5))
+#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), cvseed = 1)
+#' cv.plasso(X = x, Z = z, Y = y, lambda_seq = c(1, 0.5), zlinear = FALSE)
 cv.plasso <- function(X, Z, Y, kfold = 10, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = TRUE, tol = 1e-7, iter = 500, cvseed = NULL){
 
     # p: number of main predictors; K: number of modifying variables, N: sample size
