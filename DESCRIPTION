@@ -6,7 +6,7 @@ Authors@R: person(given = "Rakheon",
            family = "Kim",
            role = c("aut", "cre"),
            email = "rkim@stat.tamu.edu")
-Description: Procedures for fitting pliable lasso and structural varying-coefficient regression
+Description: Procedures for fitting pliable lasso and structural varying-coefficient regression.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
