@@ -13,6 +13,8 @@ devtools::install_github("rakheon/c2plasso", force = TRUE)
 ## Example
 
 ```
+library(c2plasso)
+
 # data generation
 x=matrix(rnorm(100*5, 0, 1),100,5)
 z1=matrix(rnorm(100*3, 0, 1),100,3)
