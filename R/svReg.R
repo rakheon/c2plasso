@@ -34,13 +34,17 @@ svReg1 <- function(X, Z = NULL, Y, df_X, df_Z, lambda = 0.5, alpha = 0.5, tt = 0
     df_Z_cum <- cumsum(df_Z)
     main_partition <- get_empty_list(paste0("l_",1:length(df_X)))
     main_partition[[1]] <- 1:df_X_cum[1]
-    for (i in 2:length(df_X)){
-        main_partition[[i]] <- (df_X_cum[i-1]+1):df_X_cum[i]
+    if (length(df_X)>1){
+        for (i in 2:length(df_X)){
+            main_partition[[i]] <- (df_X_cum[i-1]+1):df_X_cum[i]
+        }
     }
     group_partition <- get_empty_list(paste0("g_",1:length(df_Z)))
     group_partition[[1]] <- 1:df_Z_cum[1]
-    for (i in 2:length(df_Z)){
-        group_partition[[i]] <- (df_Z_cum[i-1]+1):df_Z_cum[i]
+    if (length(df_Z)>1){
+        for (i in 2:length(df_Z)){
+            group_partition[[i]] <- (df_Z_cum[i-1]+1):df_Z_cum[i]
+        }
     }
 
     # Standardize inputs (Y: center, X & Z: center and scale)
@@ -475,7 +479,7 @@ svReg <- function(X, Z = NULL, Y, df_X, df_Z, lambda_seq = NULL, alpha = 0.5, tt
         }
     }
 
-    return(list(lambda_seq = lambda_seq, beta_mat = para_array[,1,], theta_mat = para_array[,-1,], beta0_vec = beta0_vec, theta0_vec = theta0_vec, beta_raw_mat = para_array_raw[,1,], theta_raw_mat = para_array_raw[,-1,], beta0_raw_vec = beta0_raw_vec, theta0_raw_vec = theta0_raw_vec, fmin_vec = fmin_vec))
+    return(list(lambda_seq = lambda_seq, beta_mat = para_array[,1,], theta_mat = para_array[,-1,, drop=FALSE], beta0_vec = beta0_vec, theta0_vec = theta0_vec, beta_raw_mat = para_array_raw[,1,], theta_raw_mat = para_array_raw[,-1,], beta0_raw_vec = beta0_raw_vec, theta0_raw_vec = theta0_raw_vec, fmin_vec = fmin_vec))
 
 }
 
@@ -548,13 +552,13 @@ cv.svReg <- function(X, Z = NULL, Y, df_X, df_Z, kfold = 10, lambda_seq = NULL, 
     for (fold in 1:kfold){
         print(c("fold: ", fold))
         # Training data
-        xtrain = X[idfold != fold, ]
-        ztrain = Z[idfold != fold, ]
+        xtrain = X[idfold != fold, , drop=FALSE]
+        ztrain = Z[idfold != fold, , drop=FALSE]
         ytrain = Y[idfold != fold]
 
         # Test data
-        xtest = X[idfold == fold, ]
-        ztest = Z[idfold == fold, ]
+        xtest = X[idfold == fold, , drop=FALSE]
+        ztest = Z[idfold == fold, , drop=FALSE]
         ytest = Y[idfold == fold]
         SXYZtest <- standardizeXYZ(xtest, ztest, ytest)
         xtest <- SXYZtest$Xtilde; ztest <- SXYZtest$Ztilde; ytest <- SXYZtest$Ytilde

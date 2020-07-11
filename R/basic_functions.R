@@ -14,7 +14,7 @@ standardizeXYZ <- function(X, Z, Y){
     Xcentered <- X - matrix(Xmeans, n, p, byrow = TRUE)
     Xweights <- sqrt(colSums(Xcentered^2)/n)
     Xweights[Xweights==0] <- 1
-    Xtilde <- as.matrix(Xcentered) %*% diag(1/Xweights)
+    Xtilde <- as.matrix(Xcentered) %*% diag(1/Xweights, nrow = p, ncol = p)
     #Xtilde <- scale(X)*sqrt(n/(n-1))
 
     # Data values for all participants may be zero

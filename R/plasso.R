@@ -250,7 +250,7 @@ plasso <- function(X, Z, Y, lambda_seq = NULL, alpha = 0.5, tt = 0.1, zlinear = 
         }
     }
 
-    return(list(lambda_seq = lambda_seq, beta_mat = para_array[,1,], theta_mat = para_array[,-1,], beta0_vec = beta0_vec, theta0_vec = theta0_vec, beta_raw_mat = para_array_raw[,1,], theta_raw_mat = para_array_raw[,-1,], beta0_raw_vec = beta0_raw_vec, theta0_raw_vec = theta0_raw_vec, fmin_vec = fmin_vec))
+    return(list(lambda_seq = lambda_seq, beta_mat = para_array[,1,], theta_mat = para_array[,-1,,drop=FALSE], beta0_vec = beta0_vec, theta0_vec = theta0_vec, beta_raw_mat = para_array_raw[,1,], theta_raw_mat = para_array_raw[,-1,], beta0_raw_vec = beta0_raw_vec, theta0_raw_vec = theta0_raw_vec, fmin_vec = fmin_vec))
 
 }
 
@@ -316,13 +316,13 @@ cv.plasso <- function(X, Z, Y, kfold = 10, lambda_seq = NULL, alpha = 0.5, tt = 
         print(c("fold: ", fold))
 
         # Training data
-        xtrain = X[idfold != fold, ]
-        ztrain = Z[idfold != fold, ]
+        xtrain = X[idfold != fold, ,drop=FALSE]
+        ztrain = Z[idfold != fold, ,drop=FALSE]
         ytrain = Y[idfold != fold]
 
         # Test data
-        xtest = X[idfold == fold, ]
-        ztest = Z[idfold == fold, ]
+        xtest = X[idfold == fold, ,drop=FALSE]
+        ztest = Z[idfold == fold, ,drop=FALSE]
         ytest = Y[idfold == fold]
 
         SXYZtest <- standardizeXYZ(xtest, ztest, ytest)
